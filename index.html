@@ -341,15 +341,32 @@ function show(p){
 let workouts = JSON.parse(localStorage.getItem("w")) || [];
 
 function addWorkout() {
-  workouts.push({
+
+  let exercise = document.getElementById("ex").value;
+  let sets = document.getElementById("set").value;
+  let reps = document.getElementById("rep").value;
+
+  if (!exercise || !sets || !reps) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  let workout = {
     id: Date.now(),
-    ex: ex.value,
-    set: set.value,
-    rep: rep.value,
+    ex: exercise,
+    set: sets,
+    rep: reps,
     date: new Date().toLocaleDateString()
-  });
+  };
+
+  workouts.push(workout);
 
   localStorage.setItem("w", JSON.stringify(workouts));
+
+  document.getElementById("ex").value = "";
+  document.getElementById("set").value = "";
+  document.getElementById("rep").value = "";
+
   display();
 }
 
@@ -360,6 +377,7 @@ function deleteWorkout(id) {
 }
 
 function display() {
+  let list = document.getElementById("list");
   list.innerHTML = "";
 
   if (workouts.length === 0) {
@@ -376,13 +394,14 @@ function display() {
         </div>
 
         <button onclick="deleteWorkout(${w.id})"
-          style="background:red;color:white;border:none;padding:6px 10px;border-radius:6px;">
+          style="background:red;color:white;border:none;padding:5px;border-radius:5px;">
           ❌
         </button>
       </li>
     `;
   });
 }
+display();
 
 /* WEIGHT */
 let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
