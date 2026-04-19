@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FitPro</title>
+<link rel="icon" type="png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<style>
+
+/* ===== GLOBAL ===== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #0b0f14;
+  color: #ffffff;
+}
+
+/* ===== APP LAYOUT ===== */
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 240px;
+  background: #111827;
+  padding: 20px;
+  border-right: 1px solid #1f2937;
+}
+
+.sidebar h2 {
+  color: #00ff9d;
+  margin-bottom: 20px;
+}
+
+.menu-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.menu-items.open {
+  max-height: 500px;
+}
+
+.sidebar button {
+  width: 100%;
+  margin: 3.5px 0;
+  padding: 12px;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sidebar button:hover {
+  background: #00ff9d;
+  color: black;
+}
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+  padding-bottom: 70px;
+}
+
+/* ===== CARDS STYLE ===== */
+.card {
+  background: #111827;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 15px;
+  border: 1px solid #1f2937;
+}
+
+/* ===== INPUTS ===== */
+input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #0b0f14;
+  color: white;
+  border: 1px solid #1f2937;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00ff9d;
+}
+
+/* ===== BUTTONS ===== */
+button.primary {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg,#00ff9d,#00c2ff);
+  border: none;
+  border-radius: 10px;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ===== LIST ===== */
+li {
+  list-style: none;
+  background: #0b0f14;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===== PAGE CONTROL ===== */
+.page { display: none; }
+.active { display: block; }
+
+/* ===== TIMER ===== */
+.timer {
+  font-size: 48px;
+  text-align: center;
+  margin: 20px 0;
+  color: #00ff9d;
+}
+
+.bmi-card {
+  background: #111827;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 12px;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.warning {
+  border-left: 6px solid #f59e0b;
+  color: #f59e0b;
+}
+
+.card {
+  background: #111827;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border-left: 4px solid #00ff9d;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  color: #9ca3af;
+  background: #0b0f14;
+  border-top: 1px solid #1f2937;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>💪 FitPro</h2>
+
+  <button onclick="toggleMenu()">☰ Menu</button>
+
+  <div id="menuItems" class="menu-items">
+    <button onclick="show('home')">Home</button>
+    <button onclick="show('workout')">Workout</button>
+    <button onclick="show('history')">History</button>
+    <button onclick="show('weight')">Weight</button>
+    <button onclick="show('calories')">Calories</button>
+    <button onclick="show('bmi')">BMI</button>
+    <button onclick="show('timer')">Timer</button>
+    <button onclick="show('about')">About Us</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HOME -->
+<div id="home" class="page active card">
+  <h1>🏋️ Fitness Dashboard</h1>
+
+  <div class="card">
+    <h3>📊 Today Overview</h3>
+    <div id="todayStats"></div>
+  </div>
+
+  <div class="card">
+    <h3>🔥 Weekly Activity</h3>
+    <div id="weeklyStats"></div>
+  </div>
+
+  <div class="card">
+    <h3>⚖️ Weight Status</h3>
+    <div id="weightStats"></div>
+  </div>
+  
+  <div class="card">
+  <h3>🎯 Set Your Goals</h3>
+
+  <input id="calGoalInput" placeholder="Daily Calorie Goal (e.g. 2200)">
+  <input id="weightGoalInput" placeholder="Weight Goal (kg e.g. 65)">
+
+  <button class="primary" onclick="saveGoals()">Save Goals</button>
+</div>
+</div>
+
+<!-- WORKOUT -->
+<div id="workout" class="page card">
+  <h2>Add Workout</h2>
+  <input id="ex" placeholder="Exercise">
+  <input id="set" placeholder="Sets">
+  <input id="rep" placeholder="Reps">
+  <button class="primary" onclick="addWorkout()">Save Workout</button>
+</div>
+
+<!-- HISTORY -->
+<div id="history" class="page card">
+  <h2>Workout History</h2>
+  <ul id="list"></ul>
+</div>
+
+<!-- WEIGHT -->
+<div id="weight" class="page card">
+  <h2>Weight Tracker</h2>
+  <input id="winput" placeholder="Enter weight (kg)">
+  <button class="primary" onclick="saveWeight()">Save</button>
+  <p id="wshow"></p>
+</div>
+
+<!-- CALORIES -->
+<div id="calories" class="page card">
+  <h2>Calories</h2>
+  <input id="food" placeholder="Food">
+  <input id="cal" placeholder="Calories">
+  <button class="primary" onclick="addCal()">Add</button>
+  <ul id="calList"></ul>
+</div>
+
+<!-- BMI -->
+<div id="bmi" class="page card">
+  <h2>BMI Calculator</h2>
+  <input id="h" placeholder="Height cm">
+  <input id="w" placeholder="Weight kg">
+  <button class="primary" onclick="calcBMI()">Calculate</button>
+  <p id="bmiRes"></p>
+</div>
+
+<!-- TIMER -->
+<div id="timer" class="page card">
+  <h2>Rest Timer</h2>
+
+  <input id="customTime" placeholder="Enter time in seconds (e.g. 90)">
+
+  <button class="primary" onclick="startCustomTimer()">Start Timer</button>
+  <button class="primary" onclick="stopTimer()">Stop</button>
+
+  <div class="timer" id="time">00:00</div>
+</div>
+
+<div id="about" class="page card">
+  <h2>About FitPro 💪</h2>
+
+  <p>
+    FitPro is a simple fitness tracking app designed to help users track workouts, calories, weight progress, and fitness goals in one place.
+  </p>
+
+  <p>
+    This app is built for learning and personal fitness tracking, with a focus on simplicity, consistency, and motivation.
+  </p>
+  
+  <p>
+    We also sell beginner friendly muscle building guide to help you buid muscle on your own. 
+  <p>
+  <p>
+	The name of the book is "Muscle 101: The complete Beginner’s guide to getting bigger, stronger and smarter".
+  </p>
+
+  <div class="card">
+    <h3>👨‍💻 Developer</h3>
+    <p>Nawaraj Pandey</p>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Purpose</h3>
+    <p>To help users build discipline, track progress, and stay consistent with fitness goals.</p>
+  </div>
+
+  <div class="card">
+    <h3>📌 Version</h3>
+    <p>FitPro v1.0</p>
+  </div>
+</div>
+
+</div> <!-- end of .app -->
+
+</div>
+</div>
+
+</div> <!-- closes .app -->
+
+<footer class="footer">
+  © 2026 FitPro, Nawaraj Pandey. All rights reserved to the developer.
+</footer>
+
+<script>
+
+let calorieGoal = localStorage.getItem("calorieGoal") || 2200;
+let weightGoal = localStorage.getItem("weightGoal") || 65;
+
+/* NAV */
+function show(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.getElementById(p).classList.add('active');
+
+  if (p === "home") {
+    loadDashboard();
+  }
+}
+
+/* WORKOUT */
+let workouts = JSON.parse(localStorage.getItem("w")) || [];
+
+function addWorkout() {
+  workouts.push({
+    id: Date.now(),
+    ex: ex.value,
+    set: set.value,
+    rep: rep.value,
+    date: new Date().toLocaleDateString()
+  });
+
+  localStorage.setItem("w", JSON.stringify(workouts));
+  display();
+}
+
+function deleteWorkout(id) {
+  workouts = workouts.filter(w => w.id !== id);
+  localStorage.setItem("w", JSON.stringify(workouts));
+  display();
+}
+
+function display() {
+  list.innerHTML = "";
+
+  if (workouts.length === 0) {
+    list.innerHTML = "<li>No workouts yet.</li>";
+    return;
+  }
+
+  workouts.forEach(w => {
+    list.innerHTML += `
+      <li>
+        <div>
+          <b>${w.ex}</b> (${w.set} x ${w.rep})<br>
+          <small>${w.date}</small>
+        </div>
+
+        <button onclick="deleteWorkout(${w.id})"
+          style="background:red;color:white;border:none;padding:6px 10px;border-radius:6px;">
+          ❌
+        </button>
+      </li>
+    `;
+  });
+}
+
+/* WEIGHT */
+let weightData = JSON.parse(localStorage.getItem("weightData")) || [];
+
+function saveWeight() {
+  let value = document.getElementById("winput").value;
+
+  if (!value) return;
+
+  let entry = {
+    id: Date.now(),
+    weight: value,
+    date: new Date().toLocaleDateString()
+  };
+
+  weightData.push(entry);
+
+  localStorage.setItem("weightData", JSON.stringify(weightData));
+
+  document.getElementById("winput").value = "";
+
+  showWeight();
+}
+
+function deleteWeight(id) {
+  weightData = weightData.filter(w => w.id !== id);
+  localStorage.setItem("weightData", JSON.stringify(weightData));
+  showWeight();
+}
+
+function showWeight() {
+  let wshow = document.getElementById("wshow");
+
+  if (weightData.length === 0) {
+    wshow.innerHTML = "No weight records yet.";
+    return;
+  }
+
+  let html = "<h3>Weight History</h3>";
+
+  weightData.forEach(w => {
+    html += `
+      <div class="card">
+        <div>
+          ⚖️ ${w.weight} kg <br>
+          📅 ${w.date}
+        </div>
+
+        <button onclick="deleteWeight(${w.id})"
+          style="margin-top:8px;background:red;color:white;border:none;padding:5px 10px;border-radius:6px;">
+          Delete
+        </button>
+      </div>
+    `;
+  });
+
+  wshow.innerHTML = html;
+}
+
+showWeight();
+
+
+
+/* CALORIES */
+let calData=JSON.parse(localStorage.getItem("c"))||[];
+
+function addCal() {
+  calData.push({
+    id: Date.now(),
+    f: food.value,
+    c: cal.value,
+    date: new Date().toLocaleDateString()
+  });
+
+  localStorage.setItem("c", JSON.stringify(calData));
+
+  food.value = "";
+  cal.value = "";
+
+  showCal();
+}
+
+function deleteCal(id) {
+  calData = calData.filter(item => item.id !== id);
+  localStorage.setItem("c", JSON.stringify(calData));
+  showCal();
+}
+
+function showCal() {
+  calList.innerHTML = "";
+
+  if (calData.length === 0) {
+    calList.innerHTML = "<li>No calories added yet.</li>";
+    return;
+  }
+
+  // Group by date
+  let grouped = {};
+
+  calData.forEach(item => {
+    if (!grouped[item.date]) {
+      grouped[item.date] = [];
+    }
+    grouped[item.date].push(item);
+  });
+
+  // Display grouped data
+  Object.keys(grouped).reverse().forEach(date => {
+
+    calList.innerHTML += `
+      <li style="background:#111827; font-weight:bold;">
+        📅 ${date}
+      </li>
+    `;
+
+    grouped[date].forEach(c => {
+      calList.innerHTML += `
+        <li>
+          <div>
+            ${c.f} - ${c.c} kcal
+          </div>
+
+          <button onclick="deleteCal(${c.id})"
+            style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">
+            ❌
+          </button>
+        </li>
+      `;
+    });
+
+  });
+}
+/* BMI */
+function calcBMI() {
+  let height = document.getElementById("h").value;
+  let weight = document.getElementById("w").value;
+
+  if (!height || !weight) {
+    document.getElementById("bmiRes").innerHTML =
+      `<div class="bmi-card warning">⚠️ Please enter values</div>`;
+    return;
+  }
+
+  height = height / 100;
+
+  let bmi = (weight / (height * height)).toFixed(1);
+
+  let status = "";
+  let color = "";
+  let emoji = "";
+
+  if (bmi < 18.5) {
+    status = "Underweight";
+    color = "#3b82f6";
+    emoji = "🥗";
+  } 
+  else if (bmi < 25) {
+    status = "Normal";
+    color = "#22c55e";
+    emoji = "💪";
+  } 
+  else if (bmi < 30) {
+    status = "Overweight";
+    color = "#f59e0b";
+    emoji = "⚡";
+  } 
+  else {
+    status = "Obese";
+    color = "#ef4444";
+    emoji = "⚠️";
+  }
+
+  document.getElementById("bmiRes").innerHTML =
+    `
+    <div class="bmi-card" style="border-left: 6px solid ${color}">
+      <div style="font-size: 28px;">${emoji} BMI: ${bmi}</div>
+      <div style="font-size: 18px; color: ${color}; margin-top: 5px;">
+        ${status}
+      </div>
+    </div>
+    `;
+}
+
+let timer;
+
+function startCustomTimer() {
+  let input = document.getElementById("customTime").value;
+
+  if (!input || input <= 0) return;
+
+  let time = parseInt(input);
+
+  clearInterval(timer);
+
+  timer = setInterval(() => {
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+
+    document.getElementById("time").innerText =
+      `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+
+    time--;
+
+    if (time < 0) {
+      clearInterval(timer);
+      document.getElementById("time").innerText = "Done!";
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timer);
+  document.getElementById("time").innerText = "00:00";
+}
+
+function loadDashboard() {
+  let today = new Date().toLocaleDateString();
+
+  let todayCalories = calData.filter(c => c.date === today);
+
+  let totalCalories = todayCalories.reduce((sum, item) => {
+    return sum + Number(item.c);
+  }, 0);
+
+  let lastWeight = weightData.length > 0
+    ? weightData[weightData.length - 1].weight
+    : "N/A";
+
+  let calorieProgress = calorieGoal
+    ? ((totalCalories / calorieGoal) * 100).toFixed(0)
+    : 0;
+
+  let weightProgress = (lastWeight !== "N/A")
+    ? ((lastWeight / weightGoal) * 100).toFixed(0)
+    : 0;
+
+  document.getElementById("todayStats").innerHTML = `
+    <p>🔥 Calories: ${totalCalories} / ${calorieGoal}</p>
+    <p>📊 Progress: ${calorieProgress}%</p>
+  `;
+  
+  document.getElementById("weeklyStats").innerHTML = `
+  <p>📊 Workouts this week: ${getWeeklyWorkouts()}</p>
+  <p>💪 Stay consistent for better results</p>
+`;
+
+  document.getElementById("weightStats").innerHTML = `
+    <p>⚖️ Current: ${lastWeight} kg</p>
+    <p>🎯 Goal: ${weightGoal} kg</p>
+    <p>📉 Progress: ${weightProgress}%</p>
+  `;
+}
+loadDashboard();
+
+function getStreak() {
+  let dates = [...new Set(workouts.map(w => w.date))];
+
+  if (dates.length === 0) return 0;
+
+  // Sort dates (latest first)
+  dates.sort((a, b) => new Date(b) - new Date(a));
+
+  let streak = 1;
+
+  for (let i = 0; i < dates.length - 1; i++) {
+    let d1 = new Date(dates[i]);
+    let d2 = new Date(dates[i + 1]);
+
+    let diff = (d1 - d2) / (1000 * 60 * 60 * 24);
+
+    if (diff === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+function getWeeklyWorkouts() {
+  let now = new Date();
+
+  // last 7 days
+  let weekAgo = new Date();
+  weekAgo.setDate(now.getDate() - 6);
+
+  let count = 0;
+
+  workouts.forEach(w => {
+    let d = new Date(w.date);
+
+    if (d.toString() !== "Invalid Date" && d >= weekAgo && d <= now) {
+      count++;
+    }
+  });
+
+  return count;
+}
+
+
+
+function saveGoals() {
+  let cal = document.getElementById("calGoalInput").value;
+  let wt = document.getElementById("weightGoalInput").value;
+
+  if (cal) {
+    calorieGoal = cal;
+    localStorage.setItem("calorieGoal", cal);
+  }
+
+  if (wt) {
+    weightGoal = wt;
+    localStorage.setItem("weightGoal", wt);
+  }
+
+  alert("Goals saved!");
+  loadDashboard();
+}
+
+function toggleMenu() {
+  const menu = document.getElementById("menuItems");
+  menu.classList.toggle("open");
+}
+
+</script>
+
+</body>
+</html>
